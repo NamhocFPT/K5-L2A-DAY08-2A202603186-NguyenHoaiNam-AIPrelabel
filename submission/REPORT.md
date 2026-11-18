@@ -44,35 +44,34 @@
 ## 5. Mask SAM cho 3 vật (Part 5)
 
 | Ảnh | SAM (phiên bản) | Số click | Mask gồm người lái / hàng hoá? | Lỗi quan sát | File trong `masks/` |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | img_013 (tuk-tuk có người lái) | SAM 2.1 base (`sam2.1_b.pt`) | 3 (2 dương, 1 âm) | Có: người lái bị tô gần hết (còn lốm đốm điểm không được chọn), một số hành khách ngồi trong xe cũng bị tô; không có hàng hoá rời | 1 click âm lên người lái không đủ để loại người ra khỏi mask xe; mask 316400 px (45.3% ảnh), 1 polygon | `masks/tuktuk_img013.jpg` |
 | img_010 (xích lô nhìn từ sau, có người đạp) | SAM 2.1 base (`sam2.1_b.pt`) | 5 (3 dương, 2 âm) | Không gồm người đạp (click âm lên áo khoác loại được), chỉ còn vài điểm lẻ trên áo | Mask bị chia 3 polygon vì người đạp che giữa xe; khung và cột mái mảnh chỉ được tô lốm đốm; mask 78416 px (11.3% ảnh); không lấn sang xích lô bên cạnh | `masks/xichlo_img010.jpg` |
 | img_023 (tuk-tuk giữa, bị người đứng che, chạm hai xe bên cạnh) | SAM 2.1 base (`sam2.1_b.pt`) | 6 (3 dương, 3 âm) | Không gồm người đứng áo vàng; không lấn sang hai tuk-tuk bên cạnh | 3 click âm đủ để tách khỏi hai xe chạm nhau; mask 52592 px (6.7% ảnh), 1 polygon; còn khuyết nhỏ ở bánh trước | `masks/tuktuk_img023.jpg` |
 
 - Đối chiếu guideline mục 4.2: quy tắc nào giúp, quy tắc nào thiếu? Giúp: 4.2.4 (hai vật chạm nhau thì mỗi vật một polygon, vùng chạm thuộc vật phía trước) giải thích vì sao phải click âm lên người lái và người đạp; 4.2.2 (lỗ nhỏ dưới ~5% diện tích thì bỏ qua) phù hợp với mask lốm đốm. Thiếu: chưa nói mask xe ba bánh có gồm người ngồi trong buồng lái không (img_013), chưa có quy tắc cho chi tiết mảnh như khung mái xích lô mà SAM tô lốm đốm (img_010), và câu hỏi mở số 5 về kính chắn gió chưa chốt.
-- *(Tuỳ chọn)* Interactor SAM trong CVAT: làm được / không (lỗi gì, đã thử gì); khác gì offline: <<>>
+- *(Tuỳ chọn)* Interactor SAM trong CVAT: làm được / không (lỗi gì, đã thử gì); khác gì offline: không làm (dùng script `sam2_points.py` offline với 3 đến 6 click mỗi vật, SAM 2.1 base, không cài interactor trong CVAT)
 
 ## 6. Calibration (Part 6)
 
-- Số quyết định: <<>> (`calibration_decisions.csv`); quan trọng nhất (dẫn `CAL-xx`): <<>>
-- Quy tắc mới đã vào `guideline_v1.1_calibrated.md`: <<>>
-- Nguyên nhân gốc: <<guideline mơ hồ / chưa nắm quy tắc / máy>>
+- Số quyết định: 6 (`calibration_decisions.csv`: CAL-01 đến CAL-06); quan trọng nhất: CAL-03 (YOLOE gán `three_wheeler` cho xe buýt ở img_013, img_018 và xe tải ở img_034: đổi sang `bus` / `truck`) và CAL-01 (xe máy đỗ dày gần camera: gán từng xe, cụm quá nhỏ hoặc bị che thì `ignore_region`, img_018, img_024)
+- Quy tắc mới đã vào `guideline_v1.1_calibrated.md`: chốt câu 2, 3, 7 của mục 6 (xe máy đỗ dày; hàng nhô ra trên 20% chiều dài xe không tính vào box; không đặt ngưỡng `conf` tối thiểu); `three_wheeler` không gồm xe từ 4 bánh trở lên và đuôi xích lô không phải `bicycle` (CAL-03, CAL-04); mask xe ba bánh loại người (CAL-05). Chưa chốt câu 1, 4, 6, và câu 5 (kính chắn gió) chỉ chốt tạm: 4 ca guideline còn khoảng trống
+- Nguyên nhân gốc: máy cho CAL-03 và CAL-04 (YOLOE nhận nhầm hình dạng, YOLO26 không có lớp xe ba bánh); guideline mơ hồ cho CAL-01, CAL-02, CAL-05 (v1.0 chưa nói ngưỡng xe đỗ dày, hàng nhô và người trong mask)
 
 ## 7. QC và quyết định (Part 6)
 
-- Mẫu: <<n>> ảnh (<<m>> ảnh `can_review` + <<k>> ngẫu nhiên, seed 42); người kiểm: bạn (**hạn chế**: bạn vừa là người duyệt).
-- Lỗi theo **đối tượng**: <<.../... = ...%>> · theo **ảnh**: <<.../... = ...%>> (ngưỡng Release ≤ 2%)
-- Top lỗi (trong: bỏ sót, thừa, sai lớp, sai vị trí/kích thước, sai thuộc tính, sai mask) + một ảnh ví dụ mỗi loại: <<>>
-- **Giới hạn mẫu nhỏ** (cận trên 95% trong `qc_report_auto.md`): <<>>
-- Script kiểm được / không kiểm được (ví dụ ôm sát, cùng bỏ sót với máy, theo checklist thật): <<>>
+- Mẫu: 8 ảnh (3 ảnh `can_review` + 5 ngẫu nhiên, seed 42), 85 đối tượng; người kiểm: bạn (**hạn chế**: bạn vừa là người duyệt nên dễ cùng bỏ sót với chính mình)
+- Lỗi theo **đối tượng**: 6/85 = 7.1% · theo **ảnh**: 5/8 = 62.5% (ngưỡng Release ≤ 2%, không đạt)
+- Top lỗi: bỏ sót 5 lỗi (ví dụ img_024: nhiều ô tô nhìn rõ chưa có box; img_004, img_022, img_035 mỗi ảnh có vật thiếu) và thừa 1 lỗi (img_003: motorbike #2 ở mép trái không phải xe máy). Không thấy lỗi sai lớp, sai vị trí/kích thước, sai thuộc tính, sai mask trong mẫu. Lỗi `bo_sot` lặp lại nên là lỗi hệ thống của cách duyệt, không phải sai từng ảnh
+- **Giới hạn mẫu nhỏ** (cận trên 95% trong `qc_report_auto.md`): 5 ảnh lỗi trên 8 ảnh, cận trên Wilson 95% của tỉ lệ ảnh lỗi thật là 86%. Với 8 ảnh, ngưỡng 2% không thể được chứng minh kể cả khi mẫu sạch hoàn toàn; chỉ chứng minh được điều ngược lại (tỉ lệ lỗi rõ ràng vượt 2%). Ngoài ra người kiểm cũng là người duyệt, và img_003 truck #7 ở xa không kiểm chứng được nên không tính
+- Script kiểm được / không kiểm được: script đếm lỗi theo phiếu mắt người và tính Wilson, chạy `validate_labels.py` kiểm định dạng; script không kiểm được box ôm sát, bỏ sót cùng với máy (người và máy cùng không thấy), hay một vật có nên gán theo guideline
 
-**Quyết định: <<Release / Hold / Rework>>**, ngày <<YYYY-MM-DD>>. Lý do (đi theo Hold → Rework → Release): <<>>
-Nếu Rework / Hold, việc cần làm tiếp: <<>>
+**Quyết định: Hold**, ngày 2026-11-18. Lý do (đi theo Hold → Rework → Release): guideline còn 4 ca chưa rõ (câu 1, 4, 6 chưa chốt; câu 5 kính chắn gió chốt tạm) nên theo cây quyết định phải Hold trước; ngay cả khi chốt hết, ảnh lỗi 5/8 = 62.5% vượt xa ngưỡng 2% và lỗi bỏ sót lặp lại nên sau đó cũng là Rework
+Nếu Rework / Hold, việc cần làm tiếp: (1) chốt câu 1, 4, 5, 6 bằng ảnh ví dụ rồi nâng guideline; (2) sửa các box bỏ sót ở img_004, 022, 024, 035 và xoá box thừa ở img_003 trong CVAT, export `qc_fixed.json`; (3) chạy lại `build_release.py` và `qc_sample.py --force` rồi kiểm mẫu mới, ghi vòng 2 vào báo cáo; (4) với ảnh dày xe, kiểm 4 góc phần tư và thêm `ignore_region` cho cụm mờ
 
 ## 8. Ghi chú cá nhân
 
-- **Dùng AI để làm bài** (công cụ nào, việc gì, kiểm tra thế nào): Claude (Anthropic) dùng để giải thích cấu trúc repo và quy trình, hướng dẫn cài đặt
+- **Dùng AI để làm bài** (công cụ nào, việc gì, kiểm tra thế nào): Claude (Anthropic), dùng xuyên suốt bài. Việc AI làm: (1) giải thích cấu trúc repo, quy trình và hướng dẫn cài đặt, lệnh chạy từng Part; (2) gợi ý cách hiểu guideline v1.0 trước khi gán gold;
 - Máy / GPU / CVAT dùng; vướng mắc cài đặt: Windows, chỉ CPU (torch 2.15.0+cpu, không GPU), Python 3.12.10 với `.venv` đặt ngoài repo, ultralytics 8.4.215, CVAT 2.81.0 chạy bằng Docker. Vướng mắc: lần đầu chạy `check_env.py` bằng Python 3.13 hệ thống vì chưa kích hoạt venv nên báo thiếu yaml và transformers; model tải vào `day08/models` ngoài repo nên phải copy vào `models/` của repo.
-- Dùng cache `data/cache/` thay vì tự chạy? Không, tự chạy bằng `prelabel.py` (cập nhật nếu dùng cache cho bước `--split all`).
 - Lỗi / bug script đã gặp (nếu có): chưa gặp lỗi script.
-- Một điều bạn làm khác lần sau: <<>>
+- Một điều bạn làm khác lần sau: sau khi duyệt xong mỗi ảnh dày xe hoặc ảnh đêm, quét lại từng góc ảnh một lần nữa để tìm vật chưa có box (5/6 lỗi QC là bỏ sót), và chốt các câu hỏi mở của guideline bằng ảnh ví dụ ngay từ lúc gán gold thay vì để đến Part 6

@@ -1,0 +1,10 @@
+image,object_id,error_type,reviewer,note
+img_003.jpg,2,thua,Nam,"motorbike #2 (0.36) ở mép trái không phải xe máy; truck #7 ở xa quá nhỏ, không kiểm chứng được (không tính lỗi)"
+img_004.jpg,,bo_sot,Nam,người áo xanh ngồi xổm bên trái tuk-tuk #20 chưa có box person
+img_008.jpg,,khong,Nam,
+img_014.jpg,,khong,Nam,
+img_017.jpg,,khong,Nam,"#97 và #98 là hai tuk-tuk liền nhau, không phải một xe vẽ hai lần"
+img_022.jpg,,bo_sot,Nam,xe máy mờ lớn ở góc dưới phải chưa có box motorbike
+img_022.jpg,,bo_sot,Nam,người áo vàng đứng cạnh cột bên phải chưa có box person
+img_024.jpg,,bo_sot,Nam,"nhiều ô tô nhìn rõ chưa có box (xe đen giữa phải, xe trắng góc trên phải); cụm xe máy mờ chưa có ignore_region"
+img_035.jpg,,bo_sot,Nam,xe máy bị cắt mép phải dưới chưa có box
