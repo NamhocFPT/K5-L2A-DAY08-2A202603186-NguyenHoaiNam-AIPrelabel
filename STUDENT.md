@@ -5,7 +5,7 @@
 - Lớp (L2 / L3 / khác): L2A
 - Tài khoản GitHub: NamhocFPT
 - Repo bài nộp (URL): <https://github.com/NamhocFPT/K5-L2A-DAY08-2A202603186-NguyenHoaiNam-AIPrelabel.git>
-- Commit chốt bài (hash): <<>>
+- Commit chốt bài (hash): 7e60b11 (commit Part 6, chốt nội dung bài)
 - Máy: Windows, chỉ CPU (không GPU), Python 3.12.10
 - CVAT (Docker): v2.81.0
 
